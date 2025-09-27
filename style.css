@@ -4,7 +4,8 @@
   padding: 0;
   box-sizing: border-box;
 }
-
+html, body { overflow-x: hidden; }
+img { max-width: 100%; height: auto; }
 body {
   font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   background-color: #f5f5f5;
@@ -12,7 +13,6 @@ body {
   line-height: 1.6;
   min-height: 100vh;
 }
-
 /* Add form label styling */
 .form-label {
   display: block;
@@ -86,6 +86,7 @@ body {
   box-shadow: 0 5px 24px rgba(0, 60, 116, 0.07);
   text-align: center;
 }
+
 
 /* Check-in form */
 .check-in {
@@ -373,8 +374,18 @@ select {
   }
 
   .teams-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
+  .container,
+.attendance-tracker {
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;   
+  padding-right: 16px;
+}
+.progress-container { max-width: 100%; }
 }
 
 .is-hidden { display: none !important; }
@@ -442,3 +453,4 @@ select {
     max-width: 740px;
   }
 }
+
