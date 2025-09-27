@@ -12,19 +12,30 @@ const waterCountEl = document.getElementById("waterCount");
 const zeroCountEl = document.getElementById("zeroCount");
 const powerCountEl = document.getElementById("powerCount");
 
-const teamStats = document.querySelector(".team-stats");
-const attendeeSection = document.createElement("section");
-attendeeSection.id = "attendeeSection";
-attendeeSection.style.marginTop = "24px";
-attendeeSection.innerHTML = `
-  <h3 style="color:#64748b; font-size:16px; margin-bottom:12px;">Attendee List</h3>
-  <div id="attendeeList" style="
-    display:flex; flex-direction:column; gap:10px;
-    background:#f8fafc; border-radius:12px; padding:16px;">
-  </div>
-`;
-teamStats.appendChild(attendeeSection);
-const attendeeListEl = attendeeSection.querySelector("#attendeeList");
+const teamCards = {
+  water: document.querySelector(".team-card.water"),
+  zero:  document.querySelector(".team-card.zero"),
+  power: document.querySelector(".team-card.power"),
+};
+
+function makeTeamListSection(cardEl) {
+  const section = document.createElement("div");
+  section.className = "attendee-sublist";
+  section.style.marginTop = "8px";
+  section.innerHTML = `
+    <div style="height:1px;background:#e2e8f0;margin:6px 0 8px;"></div>
+    <h4 style="color:#64748b;font-size:13px;margin-bottom:6px;">Members</h4>
+    <div class="list" style="display:flex;flex-direction:column;gap:8px;"></div>
+  `;
+  cardEl.appendChild(section);
+  return section.querySelector(".list");
+}
+
+const teamLists = {
+  water: makeTeamListSection(teamCards.water),
+  zero:  makeTeamListSection(teamCards.zero),
+  power: makeTeamListSection(teamCards.power),
+};
 
 const TEAM_LABELS = {
   water: "Team Water Wise",
@@ -76,15 +87,15 @@ function renderProgress() {
   );
 }
 
-function renderAttendeeList() {
-  attendeeListEl.innerHTML = "";
+function renderTeamLists() {
+  Object.values(teamLists).forEach((el) => (el.innerHTML = ""));
 
-  attendees.forEach(({ name, team }) => {
+  const makeRow = (name, team) => {
     const row = document.createElement("div");
     row.style.display = "flex";
     row.style.justifyContent = "space-between";
     row.style.alignItems = "center";
-    row.style.padding = "10px 12px";
+    row.style.padding = "8px 10px";
     row.style.background = "white";
     row.style.border = "2px solid rgba(0,0,0,0.05)";
     row.style.borderRadius = "10px";
@@ -95,43 +106,37 @@ function renderAttendeeList() {
     nameEl.style.fontWeight = "600";
     nameEl.style.color = "#0f172a";
 
-    const teamBadge = document.createElement("span");
-    teamBadge.textContent = TEAM_LABELS[team] ?? "Unknown Team";
-    teamBadge.style.fontSize = "13px";
-    teamBadge.style.fontWeight = "600";
-    teamBadge.style.padding = "6px 10px";
-    teamBadge.style.borderRadius = "999px";
+    const badge = document.createElement("span");
+    badge.textContent = TEAM_LABELS[team] ?? "Unknown Team";
+    badge.style.fontSize = "12px";
+    badge.style.fontWeight = "600";
+    badge.style.padding = "4px 10px";
+    badge.style.borderRadius = "999px";
 
-    if (team === "water") {
-      teamBadge.style.background = "#e8f7fc";
-      teamBadge.style.color = "#075985";
-      teamBadge.style.border = "1px solid #bae6fd";
-    } else if (team === "zero") {
-      teamBadge.style.background = "#ecfdf3";
-      teamBadge.style.color = "#065f46";
-      teamBadge.style.border = "1px solid #bbf7d0";
-    } else if (team === "power") {
-      teamBadge.style.background = "#fff7ed";
-      teamBadge.style.color = "#9a3412";
-      teamBadge.style.border = "1px solid #fed7aa";
-    } else {
-      teamBadge.style.background = "#f1f5f9";
-      teamBadge.style.color = "#475569";
-      teamBadge.style.border = "1px solid #e2e8f0";
-    }
+    if (team === "water") { badge.style.background = "#e8f7fc"; badge.style.color = "#075985"; badge.style.border = "1px solid #bae6fd"; }
+    else if (team === "zero") { badge.style.background = "#ecfdf3"; badge.style.color = "#065f46"; badge.style.border = "1px solid #bbf7d0"; }
+    else if (team === "power") { badge.style.background = "#fff7ed"; badge.style.color = "#9a3412"; badge.style.border = "1px solid #fed7aa"; }
+    else { badge.style.background = "#f1f5f9"; badge.style.color = "#475569"; badge.style.border = "1px solid #e2e8f0"; }
 
     row.appendChild(nameEl);
-    row.appendChild(teamBadge);
-    attendeeListEl.appendChild(row);
+    row.appendChild(badge);
+    return row;
+  };
+
+  attendees.forEach(({ name, team }) => {
+    const listEl = teamLists[team];
+    if (listEl) listEl.appendChild(makeRow(name, team));
   });
 
-  if (attendees.length === 0) {
-    const empty = document.createElement("div");
-    empty.textContent = "No attendees yet — be the first to check in!";
-    empty.style.color = "#64748b";
-    empty.style.fontSize = "14px";
-    attendeeListEl.appendChild(empty);
-  }
+  Object.entries(teamLists).forEach(([team, listEl]) => {
+    if (!listEl.children.length) {
+      const empty = document.createElement("div");
+      empty.textContent = "No attendees yet";
+      empty.style.color = "#64748b";
+      empty.style.fontSize = "12px";
+      listEl.appendChild(empty);
+    }
+  });
 }
 
 function showSuccessMessage(name, teamValue) {
@@ -160,7 +165,7 @@ form.addEventListener("submit", (e) => {
 
   renderCounts();
   renderProgress();
-  renderAttendeeList(); // NEW
+  renderTeamLists();
 
   showSuccessMessage(name, teamValue);
 
@@ -201,5 +206,5 @@ function celebrateIfGoalReached() {
 hydrateFromStorage();   
 renderCounts();
 renderProgress();
-renderAttendeeList();   
+renderTeamLists();   
 celebrateIfGoalReached(); 
