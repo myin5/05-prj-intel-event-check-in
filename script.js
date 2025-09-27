@@ -198,5 +198,8 @@ function celebrateIfGoalReached() {
   greeting.style.display = "block";
 }
 
+hydrateFromStorage();   
 renderCounts();
 renderProgress();
+renderAttendeeList();   
+celebrateIfGoalReached(); 
