@@ -181,27 +181,15 @@ function celebrateIfGoalReached() {
   applyWinnerHighlight(leaders);
 }
 
-
-function enforceCapacityIfFull() {
-  if (total >= MAX_ATTENDEES) {
-    nameInput.disabled = true;
-    teamSelect.disabled = true;
-    const btn = form.querySelector("button[type='submit']");
-    if (btn) btn.disabled = true;
-  }
-}
-
-
 form.addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  if (total >= MAX_ATTENDEES) return; 
+  e.preventDefault(); 
 
   const name = (nameInput.value || "").trim();
   const teamValue = teamSelect.value;
 
   if (!name || !teamValue || !VALID_TEAMS.has(teamValue)) return;
 
+  const prevTotal = total;
   total += 1;
   teamTotals[teamValue] += 1;
 
@@ -213,13 +201,15 @@ form.addEventListener("submit", (e) => {
   renderTeamLists();
   showSuccessMessage(name, teamValue);
 
-  if (total >= MAX_ATTENDEES) {
-    celebrateIfGoalReached();
-    enforceCapacityIfFull();
+   if (prevTotal < MAX_ATTENDEES && total >= MAX_ATTENDEES) {
+    celebrateIfGoalReached();  
+    applyWinnerHighlight(getWinningTeam());
+  } else {
+    applyWinnerHighlight(getWinningTeam());
   }
 
   form.reset();
-  nameInput.focus();
+  nameInput.focus()
 });
 
 
@@ -228,4 +218,3 @@ renderCounts();
 renderProgress();
 renderTeamLists();
 celebrateIfGoalReached();
-enforceCapacityIfFull();
