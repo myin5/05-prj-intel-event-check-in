@@ -76,6 +76,25 @@ function renderProgress() {
   progressBar.setAttribute("aria-label", `Attendance progress ${Math.round(pct)}%`);
 }
 
+function applyWinnerHighlight(leaders) {
+  
+  Object.values(teamCards).forEach(card => card.classList.remove('is-winner'));
+
+
+  const labelToKey = {
+    "Team Water Wise": "water",
+    "Team Net Zero": "zero",
+    "Team Renewables": "power",
+  };
+
+  leaders.forEach(label => {
+    const key = labelToKey[label];
+    const card = teamCards[key];
+    if (card) card.classList.add('is-winner');
+  });
+}
+
+
 function makeTeamListSection(cardEl) {
   const section = document.createElement("div");
   section.className = "attendee-sublist";
@@ -158,6 +177,8 @@ function celebrateIfGoalReached() {
   greeting.textContent = msg;
   greeting.classList.add("success-message");
   greeting.classList.remove("is-hidden");
+
+  applyWinnerHighlight(leaders);
 }
 
 
